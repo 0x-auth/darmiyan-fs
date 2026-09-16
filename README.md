@@ -12,10 +12,12 @@ Folders are states, symlinks are relations, observers are walkers, and the floor
 | `darmiyan_fs.py` | **The model (v1).** Successors are created only when observed; each node closes (`next -> .`) only when its own error `|f(x) - x|` falls below the universe's own `.ε`. States are recognized by content, not name. |
 | `reality_fs.py` | The first attempt: a precomputed Planck-to-universe ladder. Kept as the "outside" view, with time imposed from outside (all states built first, links laid afterward). |
 | `experiments.py` | Reproduces the relativity results below. |
+| `sectors.py` | One family `x -> t - 1/x` across all three Lorentz types, with a law of emergent time for each, and the two mirrors `C(x)=1-x`, `R(x)=-1/x`. |
 
 ```bash
 python3 darmiyan_fs.py universe 16     # build and observe a universe at 16-digit resolution
 python3 experiments.py                 # needs numpy, sympy
+python3 sectors.py                     # three sectors, three laws of time
 ```
 
 ## Structure of a universe
@@ -46,9 +48,25 @@ universe/
 - Observers at the same floor disagree by rapidity, not γ: gold/silver tick ratio → 1.8316.
 - Silver reading gold's history in its own coordinates sees gold close within one tick of gold's own count (proper time invariance).
 
+**Three sectors, three laws of emergent time** (`sectors.py`)
+
+| sector | Lorentz type | ticks to closure | fate (organism.py classifier) |
+|---|---|---|---|
+| hyperbolic, \|t\| > 2 | boost | ∝ log(1/ε) | settled |
+| parabolic, t = 2 | null (lightlike) | ∝ ε^(-1/2) | drifting (~log n) |
+| elliptic, \|t\| < 2 | rotation | never closes: exact cycle (rational angle) or no repeat | unresolved (~linear) |
+
+GR-like sectors carry an arrow; QM-like sectors carry only phase; light is the seam where time changes law.
+The organism's three fates in [self-referential-seed](https://github.com/0x-auth/self-referential-seed) are these three sectors.
+Two different mirrors, `C(x)=1-x` and `R(x)=-1/x`, both satisfy `X∘f∘X = f⁻¹`: reversal belongs to the map, not to any one mirror.
+
 **At the floor**
 - At high precision the closure can be a 2-cycle (last digit flips forever, error exactly ε), seen identically from other frames.
 - Recognizing states by name instead of content turns that jitter into a runaway (v0 created 1.3M folders before the disk filled).
+
+## Related
+
+[self-referential-seed](https://github.com/0x-auth/self-referential-seed): the organism line (predict, err, correct, persist), its measured fates and limits. Its earlier `filesystem-model/` now lives here.
 
 ## Origin
 
