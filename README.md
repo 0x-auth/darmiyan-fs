@@ -12,12 +12,14 @@ Folders are states, symlinks are relations, observers are walkers, and the floor
 | `darmiyan_fs.py` | **The model (v1).** Successors are created only when observed; each node closes (`next -> .`) only when its own error `|f(x) - x|` falls below the universe's own `.ε`. States are recognized by content, not name. |
 | `reality_fs.py` | The first attempt: a precomputed Planck-to-universe ladder. Kept as the "outside" view, with time imposed from outside (all states built first, links laid afterward). |
 | `experiments.py` | Reproduces the relativity results below. |
+| `instants.py` | How many instants a system must see of itself before it can know its own law. Four. Exact rationals, so precision is never the limit. |
 | `sectors.py` | One family `x -> t - 1/x` across all three Lorentz types, with a law of emergent time for each, and the two mirrors `C(x)=1-x`, `R(x)=-1/x`. |
 
 ```bash
 python3 darmiyan_fs.py universe 16     # build and observe a universe at 16-digit resolution
 python3 experiments.py                 # needs numpy, sympy
 python3 sectors.py                     # three sectors, three laws of time
+python3 instants.py                    # needs sympy; the four-instant result
 ```
 
 ## Structure of a universe
@@ -59,6 +61,19 @@ universe/
 GR-like sectors carry an arrow; QM-like sectors carry only phase; light is the seam where time changes law.
 The organism's three fates in [self-referential-seed](https://github.com/0x-auth/self-referential-seed) are these three sectors.
 Two different mirrors, `C(x)=1-x` and `R(x)=-1/x`, both satisfy `X∘f∘X = f⁻¹`: reversal belongs to the map, not to any one mirror.
+
+**Knowing your own law costs four instants** (`instants.py`)
+
+A Möbius law has 3 degrees of freedom (it is defined up to scale), and each observed transition gives one homogeneous equation, so k instants leave 3 − (k−1) directions free.
+
+| instants | transitions | free directions | law pinned? | Δ the system could believe | sector right |
+|---|---|---|---|---|---|
+| 1 | 0 | 3 | no | −4.0 … 104.0 | 33% |
+| 2 | 1 | 2 | no | −4.0 … 555.3 | 25% |
+| 3 | 2 | 1 | no | −3.9 … 55.8 | 46% |
+| 4 | 3 | 0 | **yes** | exact | exact |
+
+Every value is an exact rational, so the sensing is perfect: what is missing is instants, not precision. Below four, the system cannot even tell which sector it is in — whether it has an arrow of time at all.
 
 **At the floor**
 - At high precision the closure can be a 2-cycle (last digit flips forever, error exactly ε), seen identically from other frames.
