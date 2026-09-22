@@ -205,8 +205,17 @@ def main():
         total = rows[-1][3]
         print(f"  hops taken:            {len(rows)}")
         print(f"  tau at the last hop:   {float(total):.15f}")
-        print(f"  tau if it ran forever: {float(1 + Fraction(1,1)):.15f}"
-              f"   (sum of |x_n - x_(n+1)| converges)")
+        # closed form: x_n = F_(n+1)/F_n, so by Cassini's identity
+        #   |x_(n+1) - x_n| = 1 / (F_n F_(n+1))
+        # hence tau = sum_{n>=1} 1/(F_n F_(n+1)), the reciprocal
+        # Fibonacci-product constant. NOT 2, and not sqrt(pi) either
+        # (sqrt(pi) = 1.772453850905516, relative difference 8.0e-4).
+        F = [0, 1]
+        for _ in range(300):
+            F.append(F[-1] + F[-2])
+        exact = sum(Fraction(1, F[k] * F[k + 1]) for k in range(1, 290))
+        print(f"  tau if it ran forever: {float(exact):.15f}"
+              f"   = sum 1/(F_n F_(n+1))")
         print()
         print("  ITS TIME CONVERGES. an unbounded number of steps, a finite")
         print("  proper time. the walker has a last moment it can")
