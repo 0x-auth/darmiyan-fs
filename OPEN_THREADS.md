@@ -1,6 +1,6 @@
 # Open threads
 
-Everything unresolved as of 22 Sep 2026. Written so a reader with no memory
+Everything unresolved as of 25 Sep 2026. Written so a reader with no memory
 of the conversation can pick any one of these up.
 
 Rule used throughout: a thread is listed as OPEN only if there is a concrete
@@ -24,6 +24,8 @@ Where it bites, in three places that look unrelated but are the same problem:
 | blockchain | `1 - tanh(Λ/2) -> 2e^-Λ`, matches `(q/(1-q))^k` to 1e-6 | what one unit of Λ costs an attacker |
 | walker proper time | `τ = Σ|err|` converges to 1.7738775833, bounded by 2 | what one unit of τ is in seconds |
 | mirror simulation | inside and outside charts agree on Δ | what one hop is in metres |
+| verification | Δ fixes the conjugacy class | which member of the class you are on |
+| EDA routing | nonlinear arith predicts blow-up | what one state bit costs *your* tool |
 
 In Bitcoin the unit is hashing, which is exactly the cryptography. The claim
 "a chain without cryptography" survives only if depth is expensive for some
@@ -31,7 +33,13 @@ other reason. SYMLOOP_MAX = 40 is a real non-cryptographic constraint but it
 is a cap, not a price.
 
 **Test that would close it:** exhibit any quantity internal to the construct
-that is not a ratio. So far none found.
+that is not a ratio. So far none found, across five independent sightings.
+
+The EDA sighting is the useful one, because there the unit is obtainable: run
+the router's predictions against a real formal flow (Yosys + SymbiYosys on
+Ibex, PicoRV32, VexRiscv) and fit the thresholds to converge-vs-timeout. That
+is what supplying a unit from outside actually looks like, and it is the only
+case in this work where the outside is reachable.
 
 ---
 
@@ -241,6 +249,159 @@ chunked, at which point our code is running again and the claim weakens.
 bounded path depth? Composing through directory nesting rather than symlink
 chaining is the obvious candidate and is untested.
 
+
+---
+
+## 13. What verifies a block: the pair, and only partially
+
+**Status: result, with a hard limit. `chain/verify.py`.**
+
+Four forgeries against three verifiers:
+
+```
+                               chain   LOCAL     PHI    Delta
+                              honest    True    True        5
+          A  jump to the fixed point   False    True        5
+              B  valid chain, seed 7    True    True        5
+            C  M squared, same Delta   False    True        5
+               D  two blocks swapped   False   False        5
+```
+
+φ cannot be the validator: sitting at the fixed point satisfies a φ-check
+perfectly and lies about history. φ is also *derived* from the walker's own
+error sequence (2 log φ recovered to ten digits), so it is downstream of the
+data it would validate.
+
+There is also no hash. `f(x) = 1 + 1/x`, `f⁻¹(y) = 1/(y−1)`, one division each
+way. A Möbius map is invertible, so no block commits to anything, so there is
+nothing for a miner to do. The one-wayness a chain needs is not in the
+dynamics; it is in *reference*, where it was measured at 30,760×.
+
+**Open:** forgery B passes every available test. The construct verifies that a
+transition is lawful and cannot verify that a history is *this* one. Is there
+any internal observable that separates two valid chains from different seeds?
+If not, that is the same limit as thread 1.
+
+---
+
+## 14. Bases: a mirror is Galois conjugates, and Pisot is termination
+
+**Status: result, verified against theorem. `numbers/mirrors.py`, `numbers/bases.py`.**
+
+```
+                base  max |conj| < 1?   integers 1..25 terminating
+                 phi             True                      25 / 25
+    1+sqrt2 (silver)             True                      25 / 25
+               sqrt2            False                      12 / 25
+        (1+sqrt13)/2            False                       2 / 25
+                   e    no conjugates                       2 / 25
+                  pi    no conjugates                       3 / 25
+```
+
+The columns agree exactly. This is Pisot ⇒ property (F), with Frougny–Solomyak
+for necessity; the table is a check, not a discovery. A transcendental has no
+conjugates at all, and that absence is the same fact as non-termination.
+
+For φ the reciprocal and the Galois conjugate coincide up to sign. Holds for φ
+and silver, fails for every other base tested. That coincidence is the whole of
+φ's privilege, not any mystical property.
+
+Radix economy: base φ is **worse than binary** (3.362 against 2.885, optimum
+e at 2.718). φ buys structure, not economy.
+
+**Open:** is there a Pisot base whose economy beats binary? The Pisot numbers
+below 2 are the plastic number and the tribonacci-like family; none of the ones
+tested here do. A small exhaustive search over the known small Pisot numbers
+would settle it.
+
+---
+
+## 15. Representation cannot cancel
+
+**Status: closed, negatively, and that closure is useful. `quantum/quantum.py`.**
+
+```
+    path via |0>  +0.707107 x +0.707107 = +0.500000
+    path via |1>  +0.707107 x -0.707107 = -0.500000
+    sum                                   +0.000000
+```
+
+A change of base is a bijection computable and invertible in polynomial time,
+so nothing it does can exceed polynomial speedup. The quantum speedup comes
+from signed amplitudes that destructively cancel; a permutation of labels
+cannot annihilate anything, and probabilities only add.
+
+Grover on a 3-SAT instance at the ratio where local descent failed 120/120:
+50 oracle calls against 3,276 expected, P(solution) 0.99994535. Quadratic and
+provably optimal for unstructured search.
+
+**This closes a whole family of ideas**, including "the union of all number
+systems is a superposition." It is not: those branches are bijections of one
+object, and what the union leaves standing is the base-independent part, which
+is what an invariant is. The union is a quotient, not a superposition.
+
+---
+
+## 16. Recognition, and the cost that never vanished
+
+**Status: result. `complexity/boundary.py`, `complexity/recognition.py`.**
+
+```
+boundary     makes the search FINITE   (the field is bounded)
+recognition  makes it FAST             (the class is prepaid)
+P vs NP      asks whether recognition is ALWAYS possible
+```
+
+A BFS distance field has zero trap cells out of 1647, checked exhaustively, so
+greedy descent is guaranteed. A cheap straight-line field has one trap and
+strands agents. Renamable Horn, recognised by a 2-SAT test: 60/60 against
+43/60 blind, 1.44 ms against 28.56 ms, 0 false positives on random instances.
+
+The cost never vanished; it moved into a different currency. Someone had to
+identify the class, find the polynomial test, and write the class solver. That
+is the same "one global scan," paid in human work and amortised forever.
+
+**Open:** the reformulation "P vs NP asks whether recognition is always
+possible" is correct and is a restatement, not a result. No test attached, so
+it belongs in section 11 by this file's own rule. It is here because the two
+scripts under it are real.
+
+---
+
+## 17. The EDA analogy, and one bug it surfaced
+
+**Status: analogy stated, one concrete fix shipped.**
+
+`0x-auth/rv-verification-scheduler` turns out to be this work's `recognition.py`
+in silicon: a cheap static pass deciding which tractable class an RTL module
+belongs to, so the right engine is applied, without solving the instance.
+
+Mappings that hold:
+
+| this work | EDA |
+|---|---|
+| trap-free field / local descent | FORMAL / SIMULATION |
+| CHEAP_OPS vs NONLINEAR_OPS | algebraic vs transcendental (thread 14) |
+| verification is pairwise | SVA `a \|=> b`, RVVI/RVFI trace comparison |
+| forgery B passes everything | assertions fix the class, not the member |
+| forward cheap / reverse scan | checking vs debug; cone-of-influence vs fanout |
+| the missing unit | "thresholds are uncalibrated defaults" |
+
+That last row is thread 1 appearing in someone else's README without either of
+us noticing until now.
+
+**Bug found and fixed:** `parse_core.py` captured only the first identifier of
+a declaration, so `reg [7:0] a, b, c;` counted 8 bits instead of 24. That is an
+*under*-count, which routes an intractable module to FORMAL and burns the CI
+time the tool exists to save. Regression fixture added (72 bits; was 56); all
+four existing fixtures route identically.
+
+**Open:** does `sequential_state_bits` beat a trivial size baseline (lines of
+code, declaration count) at predicting formal timeout? If not, the width
+weighting is decoration. This is the same control that dismantled the raw pLDDT
+claim in thread 8's neighbour, and it should run as part of calibration, not
+after.
+
 ---
 
 ## 11. Not falsifiable, listed for honesty
@@ -275,3 +436,15 @@ correlation -0.077; aligned, scrambled and orthogonal are identical.
 Withdrawn.
 
 Kept in `pair/nulls/` so the failure is on the record.
+
+**And one pre-registered null.** `numbers/primes_bases.py` asked whether any
+base-φ, Zeckendorf or base-e representation statistic separates primes. The
+expected answer was written into the file header before the run. Nine of ten
+statistics looked significant; all of it was prime density. Controlling for
+representation length, p runs 0.12 to 0.89 at every length, and {nφ} is
+equidistributed over primes at KS p = 0.958, as Vinogradov requires.
+
+Two methodological errors in my own test are recorded there: a KS test applied
+to integer-valued data with heavy ties returned 1e-223 on noise, and a claim
+that F(19) is prime (4181 = 37 × 113) sat next to a table that already said
+False.
