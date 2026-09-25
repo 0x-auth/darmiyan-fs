@@ -1,0 +1,490 @@
+<title>The Between</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#f2f3f5;
+    --card:#ffffff;
+    --ink:#14171d;
+    --ink-2:#464f5d;
+    --ink-3:#78828f;
+    --rule:#d8dce2;
+    --rule-2:#e7eaee;
+    --fwd:#0f6f75;        /* forward / cheap */
+    --fwd-bg:#dcefef;
+    --rev:#8a3b6b;        /* reverse / expensive */
+    --rev-bg:#f4e2ec;
+    --open:#8a6410;       /* unresolved */
+    --open-bg:#f6ecd6;
+    --null:#5b6270;
+    --null-bg:#e4e7ec;
+    --display:"Bricolage Grotesque","Helvetica Neue",sans-serif;
+    --body:"Source Serif 4",Georgia,serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --paper:#0f1216;
+      --card:#171b21;
+      --ink:#e8ebef;
+      --ink-2:#a8b1bd;
+      --ink-3:#7c8592;
+      --rule:#2b323b;
+      --rule-2:#232932;
+      --fwd:#5fd0d4;
+      --fwd-bg:#123034;
+      --rev:#e295c0;
+      --rev-bg:#331a2a;
+      --open:#e0b354;
+      --open-bg:#322713;
+      --null:#98a1ae;
+      --null-bg:#222831;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0f1216;
+    --card:#171b21;
+    --ink:#e8ebef;
+    --ink-2:#a8b1bd;
+    --ink-3:#7c8592;
+    --rule:#2b323b;
+    --rule-2:#232932;
+    --fwd:#5fd0d4;
+    --fwd-bg:#123034;
+    --rev:#e295c0;
+    --rev-bg:#331a2a;
+    --open:#e0b354;
+    --open-bg:#322713;
+    --null:#98a1ae;
+    --null-bg:#222831;
+  }
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:48px 80px;}
+
+  h1,h2,h3,.lab{font-family:var(--display);}
+  h1{
+    font-size:clamp(2.2rem,7vw,4rem);
+    line-height:1.02;
+    font-weight:700;
+    letter-spacing:-0.025em;
+    margin:0 0 .4em;
+    text-wrap:balance;
+  }
+  .sub{font-size:clamp(1rem,2.2vw,1.2rem);color:var(--ink-2);max-width:60ch;margin:0 0 6px;}
+  .meta{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);letter-spacing:.02em;margin-top:18px;}
+  h2{
+    font-size:clamp(1.35rem,3.4vw,1.9rem);
+    font-weight:700;letter-spacing:-0.015em;margin:0 0 6px;text-wrap:balance;
+  }
+  h3{font-size:1.02rem;font-weight:700;margin:0 0 4px;letter-spacing:-0.005em;}
+  p{margin:0 0 14px;max-width:68ch;}
+  .lab{
+    font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;
+    font-weight:700;color:var(--ink-3);
+  }
+  code,.num{font-family:var(--mono);}
+
+  section{margin-top:56px;}
+  .rule{height:1px;background:var(--rule);border:0;margin:0 0 22px;}
+
+  /* ---- spine ---- */
+  .spine{display:grid;gap:14px;margin-top:26px;}
+  @media(min-width:760px){.spine{grid-template-columns:repeat(3,1fr);}}
+  .claim{
+    background:var(--card);border:1px solid var(--rule);border-radius:3px;
+    padding:20px 18px;display:flex;flex-direction:column;gap:10px;
+  }
+  .claim .n{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);}
+  .claim .t{font-family:var(--display);font-weight:700;font-size:1.06rem;line-height:1.3;letter-spacing:-0.01em;}
+  .claim p{font-size:.92rem;color:var(--ink-2);margin:0;}
+  .claim .ev{
+    font-family:var(--mono);font-size:.74rem;color:var(--ink);
+    border-top:1px dashed var(--rule);padding-top:9px;margin-top:auto;
+  }
+
+  /* ---- map ---- */
+  .mapbox{overflow-x:auto;border:1px solid var(--rule);background:var(--card);border-radius:3px;}
+  .mapbox svg{display:block;min-width:840px;width:100%;height:auto;}
+
+  /* ---- findings ---- */
+  .grid{display:grid;gap:12px;}
+  @media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr);}}
+  @media(min-width:1000px){.grid{grid-template-columns:repeat(3,1fr);}}
+  .f{
+    background:var(--card);border:1px solid var(--rule);border-radius:3px;
+    padding:16px 15px;display:flex;flex-direction:column;gap:8px;
+  }
+  .f .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .tag{
+    font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;
+    text-transform:uppercase;padding:2px 7px;border-radius:2px;font-weight:500;
+  }
+  .t-fwd{background:var(--fwd-bg);color:var(--fwd);}
+  .t-rev{background:var(--rev-bg);color:var(--rev);}
+  .t-open{background:var(--open-bg);color:var(--open);}
+  .t-null{background:var(--null-bg);color:var(--null);}
+  .f .file{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);}
+  .f p{font-size:.88rem;color:var(--ink-2);margin:0;}
+  .f .fig{
+    font-family:var(--mono);font-size:.76rem;line-height:1.55;
+    background:var(--paper);border-left:2px solid var(--rule);
+    padding:9px 10px;white-space:pre;overflow-x:auto;color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ---- table ---- */
+  .tw{overflow-x:auto;border:1px solid var(--rule);border-radius:3px;background:var(--card);}
+  table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.78rem;min-width:520px;}
+  th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--rule-2);font-variant-numeric:tabular-nums;}
+  th{font-size:.66rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);font-weight:500;}
+  tbody tr:last-child td{border-bottom:0;}
+  td.r{text-align:right;}
+
+  /* ---- errors ---- */
+  .errs{display:grid;gap:0;background:var(--card);border:1px solid var(--rule);border-radius:3px;}
+  .err{display:grid;gap:3px;padding:14px 16px;border-bottom:1px solid var(--rule-2);}
+  .err:last-child{border-bottom:0;}
+  .err .w{font-family:var(--mono);font-size:.76rem;color:var(--rev);}
+  .err .h{font-family:var(--mono);font-size:.76rem;color:var(--fwd);}
+
+  .foot{margin-top:64px;padding-top:22px;border-top:1px solid var(--rule);
+    font-family:var(--mono);font-size:.74rem;color:var(--ink-3);line-height:1.8;}
+  .foot a{color:var(--ink-2);}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="lab">19&ndash;24 September 2026 &middot; computational record</p>
+    <h1>The Between</h1>
+    <p class="sub">Six days of experiments on self-reference, time, verification and complexity. Everything here has a script behind it. The results that failed are on the page with the ones that held.</p>
+    <p class="meta">darmiyan-fs &middot; reconstruction &middot; DOI 10.5281/zenodo.22906220</p>
+  </header>
+
+  <section>
+    <p class="lab">The spine</p>
+    <h2>Three statements everything reduced to</h2>
+    <p>These were not the starting point. They are what was left after the constructions that failed were removed.</p>
+    <div class="spine">
+      <div class="claim">
+        <span class="n">01</span>
+        <span class="t">Forward is cheap. Reverse has nowhere to live.</span>
+        <p>Every reference has a direction that costs one lookup and a direction that costs a scan of the world. The reverse answer is not stored anywhere because a name is free to appear anywhere at any time.</p>
+        <span class="ev">30,760&times; measured</span>
+      </div>
+      <div class="claim">
+        <span class="n">02</span>
+        <span class="t">Time is accumulated error, not elapsed clock.</span>
+        <p>A walker's proper time is the sum of its own step-to-step differences. Freeze the system clock and the number does not move by a single bit.</p>
+        <span class="ev">&tau; = 1.773877583285132</span>
+      </div>
+      <div class="claim">
+        <span class="n">03</span>
+        <span class="t">Every quantity is a ratio. Nothing supplies the unit.</span>
+        <p>&Lambda; fixes how fast confidence grows, never what one unit costs. The same gap appears in settlement depth, in proper time, and in the simulation framework.</p>
+        <span class="ev">unresolved, four appearances</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="lab">The map</p>
+    <h2>How the pieces connect</h2>
+    <p>Each box is a script that runs. The lines are the claim each pair shares, not a call graph.</p>
+    <div class="mapbox">
+      <svg viewBox="0 0 880 470" role="img" aria-label="Map of the twelve experiments grouped into four domains, with lines showing which of the three spine claims each pair shares.">
+        <defs>
+          <marker id="a-f" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="var(--fwd)"/>
+          </marker>
+          <marker id="a-r" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="var(--rev)"/>
+          </marker>
+          <marker id="a-o" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="var(--open)"/>
+          </marker>
+        </defs>
+
+        <!-- domain bands -->
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-3)" letter-spacing="1.2">
+          <text x="20" y="44">GEOMETRY</text>
+          <text x="20" y="160">FILESYSTEM</text>
+          <text x="20" y="276">COMPLEXITY</text>
+          <text x="20" y="392">NUMBER &amp; QUANTUM</text>
+        </g>
+        <g stroke="var(--rule-2)" stroke-width="1">
+          <line x1="20" y1="54" x2="860" y2="54"/>
+          <line x1="20" y1="170" x2="860" y2="170"/>
+          <line x1="20" y1="286" x2="860" y2="286"/>
+          <line x1="20" y1="402" x2="860" y2="402"/>
+        </g>
+
+        <!-- edges, drawn first so boxes sit on top -->
+        <g fill="none" stroke-width="1.6">
+          <!-- structure -> darmiyan : sectors show up as walk failures -->
+          <path d="M150 100 C150 130, 190 130, 205 130" stroke="var(--fwd)" marker-end="url(#a-f)"/>
+          <!-- two_clocks -> manifold : proper time -->
+          <path d="M330 100 C330 130, 360 130, 372 130" stroke="var(--fwd)" marker-end="url(#a-f)"/>
+          <!-- manifold -> timeless -->
+          <path d="M448 130 L516 130" stroke="var(--fwd)" marker-end="url(#a-f)"/>
+          <!-- mirror_fs -> boundary : reverse lookup is the field -->
+          <path d="M700 152 C700 200, 470 210, 400 240" stroke="var(--rev)" marker-end="url(#a-r)"/>
+          <!-- mirror_fs -> verify : one-wayness lives in reference -->
+          <path d="M770 152 C820 200, 830 210, 800 240" stroke="var(--rev)" marker-end="url(#a-r)"/>
+          <!-- boundary -> recognition -->
+          <path d="M448 246 L512 246" stroke="var(--fwd)" marker-end="url(#a-f)"/>
+          <!-- recognition -> quantum : where descent fails, Grover doesn't -->
+          <path d="M590 268 C590 320, 700 330, 740 356" stroke="var(--fwd)" marker-end="url(#a-f)"/>
+          <!-- bases -> mirrors -->
+          <path d="M243 362 L302 362" stroke="var(--fwd)" marker-end="url(#a-f)"/>
+          <!-- mirrors -> quantum : union is a quotient, not superposition -->
+          <path d="M420 362 L600 362" stroke="var(--rev)" marker-end="url(#a-r)"/>
+          <!-- unit problem: verify + manifold + boundary all hit it -->
+          <path d="M800 268 C860 300, 860 420, 800 430" stroke="var(--open)" stroke-dasharray="4 3" marker-end="url(#a-o)"/>
+          <path d="M410 152 C410 420, 600 440, 690 434" stroke="var(--open)" stroke-dasharray="4 3" marker-end="url(#a-o)"/>
+        </g>
+
+        <!-- boxes -->
+        <g font-family="IBM Plex Mono, monospace" font-size="11">
+          <!-- geometry row -->
+          <g><rect x="90" y="72" width="120" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="150" y="90" text-anchor="middle" fill="var(--ink)">structure</text></g>
+          <g><rect x="228" y="72" width="104" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="280" y="90" text-anchor="middle" fill="var(--ink)">kappa</text></g>
+          <g><rect x="350" y="72" width="120" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="410" y="90" text-anchor="middle" fill="var(--ink)">two_clocks</text></g>
+          <g><rect x="488" y="72" width="128" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="552" y="90" text-anchor="middle" fill="var(--ink)">horizon_split</text></g>
+          <g><rect x="634" y="72" width="112" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="690" y="90" text-anchor="middle" fill="var(--ink)">instants</text></g>
+
+          <!-- filesystem row -->
+          <g><rect x="205" y="188" width="120" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="265" y="206" text-anchor="middle" fill="var(--ink)">darmiyan</text></g>
+          <g><rect x="343" y="188" width="106" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="396" y="206" text-anchor="middle" fill="var(--ink)">manifold</text></g>
+          <g><rect x="467" y="188" width="100" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="517" y="206" text-anchor="middle" fill="var(--ink)">nocode</text></g>
+          <g><rect x="585" y="188" width="104" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="637" y="206" text-anchor="middle" fill="var(--ink)">timeless</text></g>
+          <g><rect x="707" y="188" width="114" height="28" rx="2" fill="var(--fwd-bg)" stroke="var(--fwd)"/><text x="764" y="206" text-anchor="middle" fill="var(--fwd)">mirror_fs</text></g>
+
+          <!-- complexity row -->
+          <g><rect x="343" y="304" width="106" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="396" y="322" text-anchor="middle" fill="var(--ink)">boundary</text></g>
+          <g><rect x="467" y="304" width="126" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="530" y="322" text-anchor="middle" fill="var(--ink)">recognition</text></g>
+          <g><rect x="611" y="304" width="106" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="664" y="322" text-anchor="middle" fill="var(--ink)">asym_pair</text></g>
+          <g><rect x="735" y="304" width="96" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="783" y="322" text-anchor="middle" fill="var(--ink)">verify</text></g>
+
+          <!-- numbers row -->
+          <g><rect x="140" y="420" width="96" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="188" y="438" text-anchor="middle" fill="var(--ink)">bases</text></g>
+          <g><rect x="254" y="420" width="104" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="306" y="438" text-anchor="middle" fill="var(--ink)">mirrors</text></g>
+          <g><rect x="376" y="420" width="140" height="28" rx="2" fill="var(--null-bg)" stroke="var(--rule)"/><text x="446" y="438" text-anchor="middle" fill="var(--null)">primes_bases</text></g>
+          <g><rect x="534" y="420" width="106" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="587" y="438" text-anchor="middle" fill="var(--ink)">af_control</text></g>
+          <g><rect x="658" y="420" width="104" height="28" rx="2" fill="var(--card)" stroke="var(--rule)"/><text x="710" y="438" text-anchor="middle" fill="var(--ink)">quantum</text></g>
+        </g>
+
+        <!-- legend -->
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5">
+          <line x1="560" y1="36" x2="584" y2="36" stroke="var(--fwd)" stroke-width="1.6"/>
+          <text x="590" y="39" fill="var(--ink-3)">forward / cheap</text>
+          <line x1="690" y1="36" x2="714" y2="36" stroke="var(--rev)" stroke-width="1.6"/>
+          <text x="720" y="39" fill="var(--ink-3)">reverse / costly</text>
+          <line x1="560" y1="20" x2="584" y2="20" stroke="var(--open)" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <text x="590" y="23" fill="var(--ink-3)">hits the missing unit</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <p class="lab">Evidence</p>
+    <h2>What was measured</h2>
+    <hr class="rule">
+    <div class="grid">
+
+      <div class="f">
+        <div class="top"><span class="tag t-rev">reverse</span><span class="file">fs/mirror_fs.py</span></div>
+        <h3>A reference has two costs</h3>
+        <div class="fig">readlink(p)            0.624 us
+which names point at p 0.019 s
+ratio                 30,760x</div>
+        <p>The forward answer is stored at the name. The reverse answer is stored nowhere, so it is reconstructed by visiting everything.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-fwd">forward</span><span class="file">fs/manifold.py &middot; timeless/</span></div>
+        <h3>Proper time ignores the clock</h3>
+        <div class="fig">clock running  1.773877583107473
+clock frozen   1.773877583107473
+sqrt(pi)       1.772453850905516</div>
+        <p>Bit-identical under an LD_PRELOAD that freezes every clock read. &tau; = &Sigma;1/(F<sub>n</sub>F<sub>n+1</sub>) by Cassini, not &radic;&pi;: 8.0e-4 apart.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-fwd">forward</span><span class="file">fs/darmiyan.py</span></div>
+        <h3>Sectors recovered from failure</h3>
+        <div class="fig">parabolic -> self-link -> ELOOP
+rotation  -> cycle     -> ELOOP
+boost     -> open chain -> no end
+ELOOP fires at depth 41</div>
+        <p>Nothing on disk records the sector. The reader finds it by how the walk ends. A shift map is still misclassified, which is the known gap.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-fwd">forward</span><span class="file">fs/nocode.py</span></div>
+        <h3>A program made of four symlinks</h3>
+        <div class="fig">parity/even/0 -> ../even
+parity/even/1 -> ../odd
+parity/odd/0  -> ../odd
+parity/odd/1  -> ../even</div>
+        <p>The input is the path and the kernel's resolver runs it. No loop over the input anywhere. Capped at 40 components by SYMLOOP_MAX.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-fwd">forward</span><span class="file">complexity/boundary.py</span></div>
+        <h3>A correct field has no traps</h3>
+        <div class="fig">BFS field   0 trap cells of 1647
+cheap field 1 trap, 6 agents stranded
+3-SAT at ratio 5.0  0 / 120 solved</div>
+        <p>The search did not vanish, it was paid once and became a field. Approximate the field to save that cost and agents get stranded.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-fwd">forward</span><span class="file">complexity/recognition.py</span></div>
+        <h3>Recognition is prepaid structure</h3>
+        <div class="fig">blind descent        43/60  28.56 ms
+recognise + solver   60/60   1.44 ms
+false positives       0/60</div>
+        <p>Renamable Horn, detected by a 2-SAT test. My prediction that descent would score zero here was wrong; it got 43.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-rev">reverse</span><span class="file">chain/verify.py</span></div>
+        <h3>There is no hash</h3>
+        <div class="fig">f(x)   = 1 + 1/x
+f-1(y) = 1/(y-1)
+one division each way</div>
+        <p>A M&ouml;bius map is invertible, so nothing commits to anything, so there is no miner. What verifies is the pair, and &phi; cannot be the validator: jumping to the fixed point passes a &phi;-check and lies about history.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-fwd">forward</span><span class="file">pair/asym_pair.py</span></div>
+        <h3>CP exact, T violated</h3>
+        <div class="fig">baseline  8.123129892   0.000e+00
+CP        8.123129892   0.000e+00
+T         5.513863445   2.609e+00
+CPT       5.513863445   2.609e+00</div>
+        <p>All the asymmetry sits in one letter, and that letter is memory. The arrow belongs to the pair: the lossless member has no monotone quantity at all.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-open">narrowed</span><span class="file">pair/two_systems.py</span></div>
+        <h3>A conservation law, scoped down</h3>
+        <div class="fig">symmetric   3.413296 -> 3.413296
+asymmetric  3.436265 -> 12.208663</div>
+        <p>The conserved residue holds for symmetric pairs and breaks the moment one side scars. The earlier result stands with a smaller domain than claimed.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-fwd">forward</span><span class="file">numbers/mirrors.py</span></div>
+        <h3>A base has a mirror, or terminates in nothing</h3>
+        <div class="fig">phi     conj 0.618  25/25 terminate
+silver  conj 0.414  25/25
+sqrt2   conj 1.414  12/25
+e       none         2/25
+pi      none         3/25</div>
+        <p>The mirror of a base is its Galois conjugates. Inside the unit disk means Pisot means integers terminate. A transcendental has no mirror at all.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-rev">reverse</span><span class="file">quantum/quantum.py</span></div>
+        <h3>The operation no base supplies</h3>
+        <div class="fig">path via |0>  +0.707107 x +0.707107
+path via |1>  +0.707107 x -0.707107
+sum                       +0.000000</div>
+        <p>Signed amplitudes cancel. A base relabels, and a permutation cannot annihilate anything. Grover on the 3-SAT that beat descent: 50 calls against 3,276, P(solution) 0.99994535.</p>
+      </div>
+
+      <div class="f">
+        <div class="top"><span class="tag t-null">null</span><span class="file">numbers/primes_bases.py</span></div>
+        <h3>Primes look like nothing special</h3>
+        <div class="fig">within fixed length, p values
+  13  0.315    18  0.894
+  16  0.703    20  0.434
+rotation KS p = 0.9577</div>
+        <p>Nine of ten statistics looked significant until length was controlled for. All of it was prime density, not representation. Expected result written into the file before running it.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <p class="lab">The recurring wall</p>
+    <h2>One problem in four costumes</h2>
+    <p>The same gap turned up in four places that have nothing else in common. In each, the structure fixes the shape and something outside has to supply the scale.</p>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Context</th><th>Shape is right</th><th>Unit is missing</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>settlement depth</td><td>1 &minus; tanh(&Lambda;/2) &rarr; 2e<sup>&minus;&Lambda;</sup></td><td>what one unit of &Lambda; costs an attacker</td></tr>
+          <tr><td>walker proper time</td><td>&tau; converges, bounded</td><td>what one unit of &tau; is in seconds</td></tr>
+          <tr><td>mirror simulation</td><td>both charts agree on &Delta;</td><td>what one hop is in metres</td></tr>
+          <tr><td>verification</td><td>&Delta; fixes the conjugacy class</td><td>which member of the class you are on</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="lab">Corrections</p>
+    <h2>Seven things that were wrong</h2>
+    <p>These are on the page because a record that only lists what held is not a record.</p>
+    <div class="errs">
+      <div class="err">
+        <div class="w">S(T) used arg(Gamma) instead of the continuous Siegel theta branch</div>
+        <div class="h">garbage in the thousands, read out as confirming boundedness before it was caught</div>
+      </div>
+      <div class="err">
+        <div class="w">os.path.realpath is pure Python</div>
+        <div class="h">the topology-as-computation demo was proving Python can follow links; fixed with O_PATH</div>
+      </div>
+      <div class="err">
+        <div class="w">tau limit printed as 2.0</div>
+        <div class="h">a placeholder never replaced; the true value is 1.773877583285132; Zenodo v1.1 corrects it</div>
+      </div>
+      <div class="err">
+        <div class="w">base termination tested at 50 digits with a 1e-35 tolerance</div>
+        <div class="h">reported e and pi as terminating 25/25; rerun at 400 digits, 1e-300</div>
+      </div>
+      <div class="err">
+        <div class="w">KS test applied to integer-valued statistics with heavy ties</div>
+        <div class="h">returned 1e-223 on noise; Welch and the within-length control are the real answer</div>
+      </div>
+      <div class="err">
+        <div class="w">claimed F(19) is prime</div>
+        <div class="h">4181 = 37 x 113; the table beside the claim already said False</div>
+      </div>
+      <div class="err">
+        <div class="w">narrated cancellation over a state that is a fixed point of H&otimes;H</div>
+        <div class="h">the table showed 0.25 everywhere; rewritten with an actual interference</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="lab">Next</p>
+    <h2>Two things worth doing</h2>
+    <p><strong>Build the mirror framework on the M&ouml;bius case.</strong> Two resolvers over one artifact, both computing &Delta;, and the whole test is whether they agree. It is the only item that turns the pile into a tool, and the case where every answer is already known.</p>
+    <p><strong>Add the point at infinity as a real directory.</strong> If the shift map's chain then closes onto it, the classifier was right and the chart was incomplete. Closable in an evening, and either answer is useful.</p>
+  </section>
+
+  <div class="foot">
+    github.com/0x-auth/darmiyan-fs &middot; github.com/0x-auth/reconstruction<br>
+    Zenodo 10.5281/zenodo.22906220 &middot; concept DOI 10.5281/zenodo.22899577<br>
+    Abhishek Srivastava &middot; ORCID 0009-0006-7495-5039 &middot; CC BY 4.0
+  </div>
+
+</div>
