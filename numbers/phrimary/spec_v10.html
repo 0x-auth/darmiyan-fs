@@ -1,0 +1,237 @@
+<title>Phri-mary Number System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; primitives first, then what emerges from them; status chips on every claim */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --fg:#1c2230; --muted:#5b6475; --line:#dde1e8;
+  --accent:#8a6a1f; --accent-soft:#f3ecd9;
+  --ok:#2f6b4f; --ok-bg:#e3f1e9; --id:#4a5a86; --id-bg:#e6eaf5; --open:#8a5a12; --open-bg:#f8ecd6; --no:#9b3b3b; --no-bg:#f6e2e2;
+  --display:"Spectral",Georgia,serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --surface:#1a1f29; --fg:#e4e7ee; --muted:#9aa3b5; --line:#2c3341; --accent:#d6b25e; --accent-soft:#2b2618;
+  --ok:#7fc8a2; --ok-bg:#1c3328; --id:#9fb0e0; --id-bg:#232b45; --open:#e3b56a; --open-bg:#3a2e17; --no:#e59a9a; --no-bg:#3d2222; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --surface:#1a1f29; --fg:#e4e7ee; --muted:#9aa3b5; --line:#2c3341; --accent:#d6b25e; --accent-soft:#2b2618;
+  --ok:#7fc8a2; --ok-bg:#1c3328; --id:#9fb0e0; --id-bg:#232b45; --open:#e3b56a; --open-bg:#3a2e17; --no:#e59a9a; --no-bg:#3d2222; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--body);padding-inline:16px;padding-block:28px 64px}
+.wrap{max-width:780px;margin:0 auto;display:grid;gap:40px}
+header{display:grid;gap:10px;border-bottom:1px solid var(--line);padding-bottom:24px}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:600 clamp(30px,6vw,44px)/1.1 var(--display);margin:0;text-wrap:balance}
+h2{font:600 24px/1.2 var(--display);margin:0;text-wrap:balance}
+h3{font:600 15px/1.3 var(--body);margin:0}
+p{margin:0;max-width:65ch}
+.lead{font-size:17px}
+.meta{color:var(--muted);font-size:13px}
+section{display:grid;gap:14px;min-width:0}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+nav a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+nav a:hover,nav a:focus-visible{color:var(--accent);border-color:var(--accent);outline:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-block;font:500 11px/1 var(--mono);letter-spacing:.04em;padding:5px 7px;border-radius:4px;white-space:nowrap}
+.t{color:var(--ok);background:var(--ok-bg)} .i{color:var(--id);background:var(--id-bg)} .o{color:var(--open);background:var(--open-bg)} .r{color:var(--no);background:var(--no-bg)}
+.prims{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.prim{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:grid;gap:6px;align-content:start;min-width:0}
+.prim .n{font:600 13px/1 var(--mono);color:var(--accent);letter-spacing:.04em}
+.formula{font:500 14px/1.5 var(--mono);background:var(--accent-soft);border-radius:4px;padding:10px 12px;overflow-x:auto;white-space:pre}
+code{font-family:var(--mono);font-size:.92em}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px/1.3 var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.05em;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px;white-space:nowrap}
+ul{margin:0;padding-left:20px;display:grid;gap:6px;max-width:65ch}
+.thesis{font:500 19px/1.45 var(--display);border-left:3px solid var(--accent);padding:4px 0 4px 16px;max-width:60ch}
+.note{border-left:3px solid var(--line);padding:4px 0 4px 14px;color:var(--muted);font-size:14px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:18px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Spec v10 · Darmiyan · 10 Oct 2026</div>
+  <h1>Phri-mary Number System</h1>
+  <p class="lead">Three primitives: two digits under one collapse rule, two readings of the same code, and a chosen resolution. Integers, primes, unique factorization, arithmetic, periods and the 0-to-1 outside view all emerge from them; none is put in.</p>
+  <p class="meta">Abhishek Srivastava · tests run 9–10 Oct 2026 in Python, exact Z[Φ] arithmetic or 60–1200-digit precision.</p>
+  <div class="legend"><span class="chip t">TESTED</span><span class="chip i">IDENTITY</span><span class="chip o">OPEN</span><span class="chip r">RETIRED</span></div>
+  <nav aria-label="Sections"><a href="#primitives">Primitives</a><a href="#emerges">What emerges</a><a href="#primes">Primes</a><a href="#views">Inside and outside</a><a href="#arith">Arithmetic</a><a href="#tdtrd">TD and TrD</a><a href="#mass">Mass</a><a href="#zeta">Zeta</a><a href="#limits">Limits</a><a href="#beyond">Beyond the system</a><a href="#ledger">Ledger</a><a href="#open">Open</a></nav>
+</header>
+
+<section>
+  <p class="thesis">Infinity is a choice of resolution. Choose Δx, and largeness outward and depth inward are the same number of ticks; a prime is the smallest cluster of indivisible codes whose two readings agree.</p>
+</section>
+
+<section id="primitives">
+  <h2>Primitives</h2>
+  <div class="prims">
+    <div class="prim"><span class="n">1 · CODE</span><p>Digits 0 and 1. Adjacent 1s collapse upward.</p><div class="formula">011 → 100
+0200 → 1001</div></div>
+    <div class="prim"><span class="n">2 · TWO READINGS</span><p>The same digits, read with two place values.</p><div class="formula">inside  x  = Σ dᵢ Φⁱ
+outside x′ = Σ dᵢ ψⁱ,  ψ = −1/Φ</div></div>
+    <div class="prim"><span class="n">3 · RESOLUTION</span><p>Depth is chosen. Infinity is letting k grow.</p><div class="formula">Δx = Φ^(−k)</div></div>
+  </div>
+  <p class="meta">Both collapse rules preserve both readings. Collapse is unique whatever the rule order (0 of 2,000 strings depended on order); every 16-bit string collapses to the greedy code.</p>
+</section>
+
+<section id="emerges">
+  <h2>What emerges</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Emerges as</th><th>Defined only by primitives</th><th>Check</th></tr></thead>
+    <tbody>
+      <tr><td>Integers</td><td>balanced codes: x = x′</td><td class="num">all 2,000 integers balanced; at depth k exactly 1…L(k) (Lucas: 11, 29, 76, 199, 521)</td></tr>
+      <tr><td>Units</td><td>x·x′ = ±1</td><td class="num">±Φⁿ only (36 / 36)</td></tr>
+      <tr><td>Irreducibles</td><td>codes no product of codes reaches</td><td class="num">4,204 up to norm 40,000</td></tr>
+      <tr><td>Primes</td><td>minimal balanced cluster of irreducibles</td><td class="num">= ordinary primes, n = 2…521, 0 mismatches</td></tr>
+      <tr><td>Mod-5 law</td><td>a prime splits iff it is x·x′ for some unbalanced code</td><td class="num">splits iff ≡ ±1 mod 5; 5 = (√5)²</td></tr>
+      <tr><td>Code count</td><td>11-free strings of length n</td><td class="num">F(n+2); log₂Φ = 0.694 bits per digit</td></tr>
+      <tr><td>Period of 1/n</td><td>repeat length of the code</td><td class="num">= Pisano π(n), n = 2…60, 0 mismatches</td></tr>
+      <tr><td>Fibonacci anyons</td><td>fusion τ×τ = 1+τ is rule 1</td><td class="num">fusion paths = 11-free codes; pentagon/hexagon 0 violations</td></tr>
+    </tbody></table></div>
+</section>
+
+<section id="primes">
+  <h2>Primes, from nothing</h2>
+  <p>The generator makes every code to depth k, keeps the balanced ones, multiplies them with the collapse rules only, and keeps what no product reaches. Ordinary primes and the mod-5 split were checked only afterwards.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Depth k</th><th>Codes</th><th>Balanced</th><th>Emergent primes</th><th>Largest</th><th>Split</th></tr></thead>
+    <tbody>
+      <tr><td class="num">4</td><td class="num">89</td><td class="num">10</td><td class="num">5</td><td class="num">11</td><td class="num">2</td></tr>
+      <tr><td class="num">8</td><td class="num">4,181</td><td class="num">75</td><td class="num">21</td><td class="num">73</td><td class="num">9</td></tr>
+      <tr><td class="num">12</td><td class="num">196,418</td><td class="num">520</td><td class="num">98</td><td class="num">521</td><td class="num">48</td></tr>
+    </tbody></table></div>
+  <p>Two kinds appear. 2, 3, 7, 137 are one irreducible already balanced. 11, 29, 89 are a mirror pair, one heavier inside and one heavier outside, balanced only together; 89 = (10 − Φ)(10 − Φ′).</p>
+</section>
+
+<section id="views">
+  <h2>Inside and outside</h2>
+  <div class="formula">ticks  θ = ½ log_Φ(|x| / |x′|)
+fuzz   γ = 2√|x·x′| / (|x| + |x′|) = sech(θ ln Φ)   ∈ (0, 1]
+spiral ψ^θ = Φ^(−θ) · e^(iπθ)</div>
+  <ul>
+    <li>Integers sit at θ = 0, γ = 1 at any size: 1, 137 and 50,000 look alike from outside. <span class="chip t">TESTED</span></li>
+    <li>Largeness outward = depth inward: n reaches Φ^(log_Φ n) and Φ^(−log_Φ n); reading the code through the mirror returns n for all 2,000 integers. <span class="chip t">TESTED</span></li>
+    <li>Zero and infinity are one point outside: θ → ±∞ both give γ → 0. Infinity is the zero cell turned inside out: 1/[0, Δx] = [Φᵏ, ∞). <span class="chip t">TESTED</span></li>
+    <li>Each tick is a scale by Φ and a half-turn. The alternating errors are the turn; the radius gives direction. π enters as the rotation. <span class="chip t">TESTED</span></li>
+    <li>π drifts off balance about half a tick per digit: γ = 2.7 × 10⁻⁸ at depth 80. As a rotation it is ½ turn, code 0.(010). <span class="chip t">TESTED</span></li>
+    <li>v4's "Lorentz factor" 2/(Φ^θ + Φ^−θ) is this γ: the outside view of a number. <span class="chip t">TESTED</span></li>
+  </ul>
+</section>
+
+<section id="arith">
+  <h2>Arithmetic</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Op</th><th>Exact layer (codes)</th><th>Finite layer (cells of width Δx)</th></tr></thead>
+    <tbody>
+      <tr><td class="num">+</td><td>add digits, collapse; 0 invalid of 2,400</td><td>≈ 2Δx per op</td></tr>
+      <tr><td class="num">×</td><td>add place indices, collapse; = Z[Φ] product</td><td>≈ 2.4Δx per op</td></tr>
+      <tr><td class="num">−</td><td>digits −1/0/1, cancel, borrow; = sign × canonical code (200/200)</td><td>outward rounding</td></tr>
+      <tr><td class="num">÷</td><td>finite iff divisible, else periodic with period π(n)</td><td>≈ 2.7Δx; undefined when the divisor's cell holds 0</td></tr>
+    </tbody></table></div>
+  <ul>
+    <li>As cells, every ring law holds as overlap (900 / 900); as single codes, grouping changes the code 16–85% of the time. That difference is the anyon F-move. <span class="chip t">TESTED</span></li>
+    <li>m operations cost about log_Φ(2m) digits of depth. <span class="chip t">TESTED</span></li>
+    <li>Negatives need a global sign: no 0/1 code in base −Φ is a negative integer, because conjugation sends every place value to Φ^(−i) &gt; 0. <span class="chip t">PROOF</span></li>
+    <li>Knowing Φ's period π(N) factors N = pq (40 / 40); finding it classically is slower than trial division. <span class="chip t">TESTED</span></li>
+  </ul>
+</section>
+
+<section id="tdtrd">
+  <h2>TD and TrD</h2>
+  <p>FTA splits every code into two orthogonal parts. Map x to (log|x|, log|x′|); the diagonal and anti-diagonal directions are perpendicular, and both coordinates add under multiplication.</p>
+  <div class="formula">TD  = (log|x| + log|x′|)/√2   storage: what both readings share (log mass)
+TrD = (log|x| − log|x′|)/√2   reference: how the readings differ (ticks)</div>
+  <div class="tbl"><table>
+    <thead><tr><th>Building block</th><th>TD</th><th>TrD</th><th>Kind</th></tr></thead>
+    <tbody>
+      <tr><td>unit Φ</td><td class="num">0</td><td class="num">+0.6805</td><td>pure reference</td></tr>
+      <tr><td>inert prime 137</td><td class="num">6.9579</td><td class="num">0</td><td>pure storage</td></tr>
+      <tr><td>split piece 10 − Φ</td><td class="num">3.1739</td><td class="num">−0.1672</td><td>both</td></tr>
+      <tr><td>its mirror 9 + Φ</td><td class="num">3.1739</td><td class="num">+0.1672</td><td>both</td></tr>
+      <tr><td>their product 89</td><td class="num">6.3479</td><td class="num">0</td><td>pure storage</td></tr>
+    </tbody></table></div>
+  <p class="meta">Additivity holds to 8×10⁻¹⁰ over 20,000 random products. Units fill the TrD axis in steps of √2·lnΦ and never touch TD (Dirichlet's unit theorem). TD² + TrD² is only the length; the content is the perpendicular split.</p>
+</section>
+
+<section id="mass">
+  <h2>Mass and the light cone</h2>
+  <div class="formula">E = (x + x′)/2,   p = (x − x′)/2,   m² = x·x′ = E² − p²</div>
+  <ul>
+    <li>Inside and outside are light-cone coordinates. γ = 2√|N|/(|x|+|x′|) equals dτ/dt to 10⁻¹⁵; each Φ² tick is a boost (rapidity 0.9624, v = 0.745c). <span class="chip t">TESTED</span></li>
+    <li>Mass is the norm: invariant under boosts (m = 3.316625 for 3 + Φ across five boosts). <span class="chip t">TESTED</span></li>
+    <li>Mass gap: no nonzero code is massless; the lightest mass is 1, the units. <span class="chip t">TESTED</span></li>
+    <li>Allowed m²: 1, 4, 5, 9, 11, 16, 19, 20, 25, 29, 31…; forbidden: any number with a prime ≡ ±2 mod 5 to an odd power. <span class="chip t">TESTED</span></li>
+    <li>Adding codes combines bodies: combined mass ≥ sum of masses, 0 violations in 1,317 pairs. 3 + Φ and 4 − Φ moving apart combine into 7 at rest, more than 6.633. <span class="chip t">TESTED</span></li>
+    <li>Causality is the sign of x·x′; a single Φ tick flips it, so only Φ² is a physical boost. The squeeze trade-off at fixed x·x′ has the form of saturated uncertainty. <span class="chip t">TESTED</span></li>
+    <li>Gravity: nothing in the codes curves yet. <span class="chip o">OPEN</span></li>
+  </ul>
+</section>
+
+<section id="zeta">
+  <h2>Zeta from outside</h2>
+  <p>The Euler product over the system's own primes is the zeta function of Z[Φ]. It factors into the ordinary zeta, which sees the integers, and an outside factor that sees only split versus inert.</p>
+  <div class="formula">ζ_Φ(s) = ζ(s) · L(s, χ₅),   χ₅(n) = (n | 5) = +1 split, −1 inert, 0 at 5</div>
+  <div class="tbl"><table>
+    <thead><tr><th>Check</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>Euler product over Φ-primes at s = 2</td><td class="num">1.161666 vs ζ(2)·L(2,χ₅) = 1.161671</td></tr>
+      <tr><td>Zeros of L(1/2 + it, χ₅), t &lt; 30</td><td class="num">6.648, 9.831, 11.959, 16.034, 17.567, 19.541, 24.588, 28.461: all on Re = ½</td></tr>
+      <tr><td>Rhythm of split − inert primes, x ≤ 10⁷</td><td class="num">peaks 6.64, 9.88, 11.96, 15.98, 17.58, 19.62</td></tr>
+      <tr><td>Rhythm of all primes (inside), x ≤ 10⁸</td><td class="num">peaks at ζ zeros 14.13, 21.02, 25.01…</td></tr>
+    </tbody></table></div>
+  <p>The inside hears the ordinary zeta zeros; the outside hears its own, set by the mod-5 character. The zeros found here sit on the critical line, as the generalised Riemann hypothesis predicts; this is a check, not a proof.</p>
+</section>
+
+<section id="limits">
+  <h2>Limits</h2>
+  <ul>
+    <li><strong>No finite depth holds every prime.</strong> Product of all primes at depth 12, plus 1, needs depth ≈ 1,026 and has new prime factors. <span class="chip t">TESTED</span></li>
+    <li><strong>No finite machine recognises primes.</strong> Every prefix of every length needs its own state (233 of 233 at length 13). <span class="chip t">TESTED</span></li>
+    <li><strong>No set of dimensions makes everything finite.</strong> Each added dimension rescues its own numbers (base ρ makes ρ finite and Φ infinite); finite codes are countable, the reals are not. <span class="chip t">PROOF</span></li>
+    <li><strong>What is finite is the rule set.</strong> The few lines above generate every prime, as "add 1" generates every integer.</li>
+    <li><strong>Cost.</strong> 1.44× the digits of binary for the same precision.</li>
+  </ul>
+</section>
+
+<section id="beyond">
+  <h2>Beyond the system</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Link</th><th>Result</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Negative curvature: smallest integer stretch of H² is Φ²</td><td class="num">trace 3, length 4 ln Φ</td><td><span class="chip t">TESTED</span></td></tr>
+      <tr><td>Three-gap theorem: n points of {kΦ} cut the circle into cells Φ⁻ᵏ</td><td class="num">every n tested, ratio Φ</td><td><span class="chip t">TESTED</span></td></tr>
+      <tr><td>4/3 dimension: steps Φ^(−3/4), Φ^(−3/2) rotated by the golden angle</td><td class="num">Moran exact; box dim 1.337</td><td><span class="chip t">TESTED</span></td></tr>
+      <tr><td>r_s · λ_C = 2 l_P² (mass is the norm, not a unit; see Mass)</td><td class="num">identity</td><td><span class="chip i">IDENTITY</span></td></tr>
+      <tr><td>Λ = G²m_e⁶/(ħ⁴α⁶)</td><td class="num">23% off (Planck H₀)</td><td><span class="chip o">OPEN</span></td></tr>
+      <tr><td>Golden tail of 1/α after the 19</td><td class="num">137.0359992069…, untestable yet</td><td><span class="chip o">OPEN</span></td></tr>
+    </tbody></table></div>
+</section>
+
+<section id="ledger">
+  <h2>Ledger</h2>
+  <h3>Identities that looked like results</h3>
+  <ul>
+    <li>Axiom I as Φ⁻¹ + Φ⁻² = 1 and as r + (1 − r) = 1; TD² + TrD² from phases alone. The tested form is the deficit at finite resolution: 0.35487, with mean cell position exactly 1/√5.</li>
+  </ul>
+  <h3>Retired</h3>
+  <ul>
+    <li>Extra Φ-structure in residuals; Φ in prime gaps or in a prime rhythm; Δx as a Planck limit; Φ in α's continued fraction; 1/137 as a Fibonacci decimal; a 4/3 Brownian horizon; E(d) = Σ dᵢFᵢ as the evaluation map (merged 127 pairs, broke ×).</li>
+  </ul>
+  <h3>Correction</h3>
+  <p class="note">v4's complex ψ^θ was replaced by |ψ|^θ in the first review. That removed the spiral's rotation; ψ^0.5 = 0.786i is the half-tick.</p>
+</section>
+
+<section id="open">
+  <h2>Open</h2>
+  <ul>
+    <li><strong>Full spiral point.</strong> Carry inside, outside and phase in every number, so direction is part of the code.</li>
+    <li><strong>Equality.</strong> Same code (transitive) or overlapping cells (what the finite layer can tell apart).</li>
+    <li><strong>Mirror collapse.</strong> Base −Φ collapses downward, <code>110 → 001</code>. Is that F's minus sign?</li>
+    <li><strong>Subtraction cost.</strong> Correct but slow borrow: median ~1,000 steps.</li>
+    <li><strong>Error detection.</strong> Share of single bit-flips the no-11 rule catches.</li>
+  </ul>
+</section>
+
+<footer>Phri-mary (Darmiyan) Number System · Spec v10 · supersedes v9 · verification: numbers/phrimary/phrimary_master.py in 0x-auth/darmiyan-fs (30/30 checks, seed 515) · ORCID 0009-0006-7495-5039</footer>
+</div>
