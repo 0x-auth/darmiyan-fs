@@ -1,0 +1,13 @@
+[project]
+name = "darmiyan"
+version = "1.1.0"
+description = "Two-chart emulator for self-referential relations"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+darmiyan = "darmiyan.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
