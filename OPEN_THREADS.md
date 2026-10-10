@@ -1,6 +1,6 @@
 # Open threads
 
-Everything unresolved as of 25 Sep 2026. Written so a reader with no memory
+Everything unresolved as of 3 Oct 2026. Written so a reader with no memory
 of the conversation can pick any one of these up.
 
 Rule used throughout: a thread is listed as OPEN only if there is a concrete
@@ -448,3 +448,214 @@ Two methodological errors in my own test are recorded there: a KS test applied
 to integer-valued data with heavy ties returned 1e-223 on noise, and a claim
 that F(19) is prime (4181 = 37 × 113) sat next to a table that already said
 False.
+
+---
+
+## 14. Λ ∝ α⁻⁶ — the first relation in this work that fixes a MAGNITUDE
+
+**Status: open, and it is the most promising thread here.**
+
+`alpha6.py`, `verify_wei.py`. Wei, Zou, Li & Xue, arXiv:1605.04571, reviewing
+Beck (2004), Böhmer–Harko and Nottale (1993).
+
+```
+Λ = G² m_e⁶ / (ℏ⁴ α⁶)         predicted 1.362852e-52 m⁻²
+                               observed  1.105600e-52 m⁻²
+                               ratio     1.232681
+```
+
+Two reductions, both verified to the last digit:
+
+| form | statement |
+|---|---|
+| Planck-normalised | `Λ·l_pl² = ( m_e / (α·m_pl) )⁶` |
+| electron-normalised | `Λ·r_e² = ( l_pl / r_e )⁴` |
+| as a radius | `L_dS / l_pl = ( r_e / l_pl )³` |
+
+The single dimensionless number has two faces that are the same number:
+`l_pl/r_e = m_e/(α·m_pl) = 5.7355899e-21`.
+
+**Why this matters for section 1.** This does not derive Λ. It trades Λ for
+`m_e/m_pl` — one unexplained number for another. But 10⁻¹²² of unexplained
+smallness becomes 10⁻²¹. The missing unit has not been found; for the first
+time it has been **moved**, out of the cosmological constant and into the
+electron mass.
+
+**Why it is weaker than "three independent derivations" sounds.** The
+Böhmer–Harko route carries a factor of 48, discarded as "order unity".
+48^(1/6) = 1.906 is order unity; 48 is not. Keeping it puts Λ 59× high.
+
+```
+         treatment of the 48            Lambda     vs observed
+     kept (eq 5 as written)      6.541691e-51         59.1687
+discarded (eq 6 as published)    1.362852e-52          1.2327
+```
+
+A sixth power destroys order-unity hygiene: drop a 2π and Λ moves by
+2.5×10⁸. So the **exponent** is triply derived; the **magnitude** rests on
+Beck alone, and specifically on his axiom B3, "simplicity", which is what
+sets the prefactor to exactly 1. An aesthetic axiom doing quantitative work.
+
+Also: the exponent is 6.0045 in Planck units and 4.0045 in electron units.
+The gap is exactly 2 = the dimension of Λ. **"Λ ∝ α⁻⁶" is well-posed only in
+Planck normalisation.**
+
+**Where the 23% lives — traceable, not diffuse.** The residual as a length is
+0.965736, and `R_p(bare)/r_e` from their eq (5) is 1.035480. Same number. The
+entire 23% is a −3.43% mismatch in the one identification `R_p ≈ r_e`,
+amplified sixfold. It is *not* an 8π convention artifact; the ratio is
+identical whether computed from Λ or from ρ_Λ.
+
+**Tests that would close it:**
+1. Chase the −3.43%. If `R_p ≈ r_e` can be made exact with a defensible
+   factor, the relation becomes a prediction rather than a coincidence.
+2. The relation implies `ρ̇_Λ/ρ_Λ = −6 α̇/α`. Its observational anchor is
+   Webb et al. 1998–2001; that signal has **not** held up cleanly against
+   later VLT, atomic-clock and Oklo bounds. Re-fit against current Δα/α
+   limits and see whether the interacting-vacuum model survives.
+
+---
+
+## 15. The moving substrate: three failure modes, and an inverse-power law
+
+**Status: partially closed.**
+
+`expanding.py`, `pixel.py`, `fourthirds.py`.
+
+Let the substrate stretch while the walker walks: `D → D − 1 + h·D^(1−p)`.
+
+| p | stretch term | outcome |
+|---|---|---|
+| 0 | `h·D` grows with D | **horizon** at D = 1/H |
+| 1 | `h` constant | marginal |
+| > 1 | `h·D^(1−p)` falls with D | **floor** at `D* = h^(1/(p−1))` |
+
+The floor is a **third failure mode** this work had not produced: not a fixed
+point of a map (the relation stops), not a horizon (the substrate wins).
+Neither. A minimum separation that can never be closed.
+
+Stability: `f'(D*) = 1 − (p−1)/D*`, so the floor is stable iff `D* > (p−1)/2`.
+Below that threshold the separation oscillates forever around a floor it can
+neither reach nor leave. For p = 6 the threshold is h > 97.66.
+
+**And the exponent is forced, not chosen.** `1/(p−1) = 3` has one solution.
+So if the floor is to be the *cube* of the rate — and the cube is what the Λ
+relation above hands you (`L_dS/l_pl = (r_e/l_pl)³`) — then **p = 4/3**.
+
+Setting h = r_e/l_pl gives D* = 5.299876e+60 against L_dS/l_pl =
+5.884250e+60, ratio 0.900688. **This is not evidence.** It is the same
+identity rewritten; the residual is the 1.2327 under a square root. Likewise
+"relaxation ≈ 2× the age of the universe" is forced, since relax = 3D* and D*
+*is* the de Sitter time in Planck times.
+
+One real consequence: `(p−1)/D* = 6.3e−62`, below float64 resolution against
+1. **This floor cannot be simulated at all.** Every other horizon in this work
+was measured; this one is algebraic only.
+
+**Open:** `construct2.py` showed that moving *both* organism and substrate
+destroys the single outside view — the outside answer changed on 6 of 6 reads,
+breaking mirror.py's bridge contract. The one-mover construct above is the
+response. Whether a dated bridge contract (comparing dated pairs) can be made
+to work is untested.
+
+---
+
+## 16. The two 4/3's, and whether they are one
+
+**Status: open, with a sharp test.**
+
+`fourthirds.py`, `noise.py`.
+
+The planar Brownian frontier has Hausdorff dimension **exactly 4/3** —
+Mandelbrot conjectured 1982, Lawler–Schramm–Werner proved 2000
+(math/0010165) via Schramm's SLE. Fields Medals: Werner 2006, Smirnov 2010.
+
+**Why this is the most interesting object in the whole project.** The
+frontier is *defined* as the set of visited points reachable from infinity
+without crossing the walk. That is not a geometric condition — nothing about
+position decides it. A point is on the frontier iff **the outside can reach
+it**. So 4/3 is the dimension of *reachability-from-outside*: the
+inside/outside seam this work is built on, with an exact value attached.
+
+| in this project | has a number? |
+|---|---|
+| inside resolver's proper time τ | yes, 1.7738775833 |
+| outside resolver's link count | yes, an integer |
+| cost asymmetry between them | yes, 30760× |
+| **the boundary between them** | **4/3** |
+
+Every earlier number is a property of one side, or of the machine. 4/3 is a
+property of the seam — and **it contains no constants**. No ℏ, c, G, α,
+nothing measured. Section 1 does not apply to it: there is no unit to miss.
+The whole family is exact rationals from `dim = 1 + κ/8` (5/4 LERW, 4/3 SAW,
+7/4 percolation and pioneer points, 3/4 cut points, 2 the range).
+
+**But they are not the same 4/3, and the reason is decisive.** The Brownian
+frontier is 4/3 *because the walk is planar* — in 3D it is ≈2.5 and the 4/3 is
+gone. It is a theorem about d = 2. Section 15's walk is a scalar separation on
+a line; there is no plane in it.
+
+**Test that would make it one connection instead of two numbers:**
+1. the construct needs a *planar* walk — two coordinates that both diffuse;
+2. the 4/3 must be the box-counted dimension of the construct's own horizon,
+   not an exponent in its update rule;
+3. **the 4/3 must stop depending on h.** This is the killer. In section 15
+   the floor moves as h³, so everything about it depends on the rate. A
+   Hausdorff dimension does not. If the construct's 4/3 ever becomes
+   rate-independent, that is the moment it is the same 4/3.
+
+---
+
+## 17. Fluctuation as an instrument
+
+**Status: not a thread — a method worth adopting.**
+
+`noise.py`. Einstein, May 1905: `⟨x²⟩ = 2Dt`, `D = RT/(6πηa·N_A)`. The left
+side is a wobble you can watch; the right contains Avogadro's number. For a
+0.212 µm bead that is 7.8 µm of wander in 30 s — a microscope and a ruled
+grid. Perrin inverted it from 1908; Nobel 1926.
+
+Nothing in that calculation resolves an atom. And it generalises:
+
+| fluctuation | relation | yields |
+|---|---|---|
+| Brownian motion (1905) | `⟨x²⟩ = 2Dt` | N_A |
+| Johnson–Nyquist noise (1928) | `⟨V²⟩ = 4kTR·Δf` | k_B |
+| shot noise (Schottky 1918) | `⟨I²⟩ = 2eI·Δf` | e |
+
+Einstein's move was not "atoms exist". It was **fluctuations carry the
+constants**. Noise is not the error bar; noise is where the constant lives.
+
+Brown's own contribution is worth recording precisely: he is remembered for
+seeing the jitter, but it counted because he ground up glass, window panes and
+old wood and watched those jitter too. The obvious reading was "the pollen is
+alive". He killed it himself. **The discovery was the control.**
+
+---
+
+## 18. Errors in this work, cumulative
+
+Running count: **14**, all left visible in the files with corrections
+attached rather than cleaned up. The dominant failure mode has been constant
+throughout: **prose contradicting the table directly above it.**
+
+The four from 3 Oct, since they are instructive:
+
+| # | error | correction |
+|---|---|---|
+| 11 | Derived an Alcubierre mass of 10³¹ kg | Wrong by 33 orders; quoted Pfenning–Ford's −6.2×10⁶⁴ kg instead and said so |
+| 12 | "EVERYTHING ARRIVES" above a column of `False` | There is no arrival *and* no horizon — the floor, §15 |
+| 13 | Refuted Λ ∝ α⁻⁶ by comparing α⁻⁶ to Λ in Planck units | Dropped the prefactor. "Proportional" asserts nothing about magnitude. The claim survived both of my tests of it |
+| 13b | Called the exponent 56.878 structureless | It factors: 6×10.473 − 6. Factor an ugly exponent before calling it featureless |
+| 14 | Box-counted the Brownian frontier with a *fixed* box list | Estimate slid 1.3025 → 1.2382 as the walk grew, because a longer walk was measured at a finer relative scale. Boxes must scale with the object |
+
+And the control that should have come first: box-counting the **range**,
+whose dimension is exactly 2, returns 1.7153. The method under-reads a
+known-2 object by 0.27, so it cannot distinguish 4/3 from 1.25 or 1.40.
+**My frontier measurements were never evidence.** The cause is real — a
+planar walk visits ~πN/log N distinct sites, so the range is only dimension 2
+in the limit, and a log correction shows up as a dimension deficit in a
+power-law fit.
+
+Standing lesson: run the known-answer control before quoting any number from
+a new measurement, not after.
